@@ -10,6 +10,7 @@
 #include <math.h>
 #include <assert.h>
 #define SCALE_FACTOR 0.005f
+#define BUFSIZE 512
 GLfloat LightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat LightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 static GLfloat light0_position[] = { 4.0, 4.0, 4.0, 0.0 };
@@ -663,7 +664,7 @@ void glArea::draw_faces() {
 
 
 // CHECK HERE FOR JUNCTION POINT COLORING ERRORS
-void glArea::draw_lines() {
+void glArea::draw_lines(GLenum mode = GL_RENDER) {
 	// ofstream fout("draw_lines.txt");
 	// fout << "Drawing lines..." << endl;
 	if (line_color == Normal) {
@@ -708,6 +709,8 @@ void glArea::draw_lines() {
 				// fout << edgeList[j][0] << " " << edgeList[j][1] << " ";
 				// fout << edge_color.r << " " << edge_color.g << " " << edge_color.b << endl;
 
+				if(mode == GL_SELECT)
+					glLoadName(IDs[edgeList[j][0]]);
 				glColor4f((float)edge_color.r, (float)edge_color.g, (float)edge_color.b, 1.0);
 				glVertex3f(vertexList[edgeList[j][0]][0], vertexList[edgeList[j][0]][1], vertexList[edgeList[j][0]][2]);
 				glVertex3f(vertexList[edgeList[j][1]][0], vertexList[edgeList[j][1]][1], vertexList[edgeList[j][1]][2]);
@@ -818,18 +821,69 @@ void glArea::paintGL()
 	update();
 }
 
+ofstream fout("selection.txt");
+void glArea::process_hits(GLint hits, GLuint buffer[]) {
+	unsigned int i, j;
+	GLuint ii, jj, names, *ptr;
+
+	fout << "Hits = " << hits << "\n";
+	ptr = (GLuint *)buffer;
+	for (int i = 0; i < 1; i++) { // first one only?
+		names = *ptr;
+		fout << "num names for this hit = " << names << "\n";
+		++ptr;
+
+		fout << "z1 is " << (float)*ptr / 0x7fffffff << "\n"; ptr++;
+		fout << "z2 is " << (float)*ptr / 0x7fffffff << "\n"; ptr++;
+		fout << "the names are ";
+		for (int j = 0; j < names; j++)
+			fout << *ptr << " ", ++ptr;
+		fout << "\n";
+	}
+}
+
 void glArea::mousePressEvent(QMouseEvent * event)
 {
-	if (event->buttons() == Qt::LeftButton) {
-		isRotate = true;
-		isTranslate = false;
-	}
-	else if (event->buttons() == Qt::RightButton) {
-		isTranslate = true;
-		isRotate = false;
-	}
 	GLUTmouse[0] = event->pos().x();
 	GLUTmouse[1] = event->pos().y();
+	if (!editOn)
+	{
+		if (event->buttons() == Qt::LeftButton) {
+			isRotate = true;
+			isTranslate = false;
+		}
+		else if (event->buttons() == Qt::RightButton) {
+			isTranslate = true;
+			isRotate = false;
+		}
+	}
+	else {
+		GLuint selectBuf[BUFSIZE];
+		GLint hits;
+		GLint viewport[4];
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glSelectBuffer(BUFSIZE, selectBuf);
+		(void)glRenderMode(GL_SELECT);
+		glInitNames();
+		glPushName(0);
+
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluPickMatrix((GLdouble)GLUTmouse[0], (GLdouble)(viewport[3] - GLUTmouse[1]), 2.0, 2.0, viewport);
+
+		gluOrtho2D(0.0, 3.0, 0.0, 3.0);
+		draw_lines(GL_SELECT);
+
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glFlush();
+
+		hits = glRenderMode(GL_RENDER);
+		process_hits(hits, selectBuf);
+		//glutPostRedisplay();
+	}
 }
 
 void glArea::mouseMoveEvent(QMouseEvent * event)

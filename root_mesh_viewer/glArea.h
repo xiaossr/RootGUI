@@ -101,12 +101,13 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent * event);
 	
-	void draw_lines();
+	void draw_lines(GLenum mode);
 	void draw_whorlsAbove();
 	void draw_whorlsBelow();
 	void draw_rootsAbove();
 	void draw_rootsBelow();
 	void draw_plane();
+	void process_hits(GLint hits, GLuint buffer[]);
 
 private:
 	int skeleton_size;

@@ -44,6 +44,9 @@ mainPage::mainPage(QWidget *parent)
 	QObject::connect(ui->nodalRootAbove, SIGNAL(stateChanged(int)), this, SLOT(nodalRootAboveCheckBox(int)));
 	QObject::connect(ui->showPlane, SIGNAL(stateChanged(int)), this, SLOT(showPlaneCheckBox(int)));
 	QObject::connect(ui->skeletonColor, SIGNAL(currentIndexChanged(int)), this, SLOT(skeletonColorComboBox(int)));
+
+	QObject::connect(ui->editOn, SIGNAL(stateChanged(int)), this, SLOT(turnOnEditing(int)));
+	QObject::connect(ui->propagate, SIGNAL(clicked()), this, SLOT(confirmPropagate()));
 }
 
 mainPage::~mainPage()
@@ -364,4 +367,15 @@ void mainPage::skeletonColorComboBox(int _s)
 		ui->jetMaxBox->setValue((double)*max_element(area->radius.begin(), area->radius.end()));
 		ui->jetMaxBox->setSingleStep(.01);
 	}
+}
+
+void mainPage::turnOnEditing(int _s) {
+	if (_s == Qt::Checked) {
+		area->editOn = true;
+	}
+	else area->editOn = false;
+}
+
+void mainPage::confirmPropagate() {
+	
 }

@@ -60,6 +60,8 @@ public:
     QComboBox *skeletonColor;
     QLabel *label_7;
     QLabel *label_8;
+    QCheckBox *editOn;
+    QPushButton *propagate;
     QWidget *meshTab;
     QCheckBox *showMesh;
     QSlider *alphaSlider;
@@ -210,6 +212,12 @@ public:
         label_8 = new QLabel(skeletonTab);
         label_8->setObjectName(QStringLiteral("label_8"));
         label_8->setGeometry(QRect(20, 220, 111, 31));
+        editOn = new QCheckBox(skeletonTab);
+        editOn->setObjectName(QStringLiteral("editOn"));
+        editOn->setGeometry(QRect(10, 560, 74, 17));
+        propagate = new QPushButton(skeletonTab);
+        propagate->setObjectName(QStringLiteral("propagate"));
+        propagate->setGeometry(QRect(100, 557, 93, 21));
         tabWidget->addTab(skeletonTab, QString());
         meshTab = new QWidget();
         meshTab->setObjectName(QStringLiteral("meshTab"));
@@ -342,6 +350,8 @@ public:
 
         label_7->setText(QApplication::translate("mainPageClass", "Skeleton Color", nullptr));
         label_8->setText(QApplication::translate("mainPageClass", "Skeleton Color Range", nullptr));
+        editOn->setText(QApplication::translate("mainPageClass", "editOn", nullptr));
+        propagate->setText(QApplication::translate("mainPageClass", "propagate", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(skeletonTab), QApplication::translate("mainPageClass", "Skeleton", nullptr));
         showMesh->setText(QApplication::translate("mainPageClass", "Show Mesh", nullptr));
         label->setText(QApplication::translate("mainPageClass", "Transparency", nullptr));

@@ -395,6 +395,32 @@
            <string>Skeleton Color Range</string>
           </property>
          </widget>
+         <widget class="QCheckBox" name="editOn">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>560</y>
+            <width>74</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>editOn</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="propagate">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>557</y>
+            <width>93</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>propagate</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="meshTab">
          <property name="styleSheet">
