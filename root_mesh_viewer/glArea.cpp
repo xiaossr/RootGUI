@@ -16,6 +16,7 @@ static GLfloat light0_position[] = { 4.0, 4.0, 4.0, 0.0 };
 static GLfloat light1_position[] = { -3.0, -3.0, -3.0, 0.0 };
 
 int ID = 1;
+const float SPHERE_RAD = 1.0f;
 
 void dfsid(int at, int par, vector< vector<int> >& adj, std::set<int> &junctions, vector<int> & IDs)
 {
@@ -818,9 +819,80 @@ void glArea::paintGL()
 	update();
 }
 
+vec3 glArea::getRayFromMouse(float mousex, float mousey) {
+	float x = (2.0f * mousex) / GLUTwindow_width - 1.0f;
+	float y = 1.0f - (2.0f * mousey) / GLUTwindow_height;
+	float z = 1.0f;
+	vec3 ray_nds = vec3(x, y, z);
+	vec4 ray_clip = vec4(ray_nds.xy, -1.0, 1.0);
+	vec4 ray_eye = inverse(projection_matrix) * ray_clip;
+	ray_eye = vec4(ray_eye.xy, -1.0, 0.0);
+	vec3 ray_wor = (inverse(view_matrix) * ray_eye).xyz;
+	// don't forget to normalise the vector at some point
+	ray_wor = normalise(ray_wor);
+	return ray_wor;
+}
+
+bool raySphereIntersect(vec3 rayOrig, vec3 rayDir, vec3 sphereCent, float sphereRad, float* intersectDist) {
+	vec3 dist_to_sphere = rayOrig - sphereCent;
+	float b = dot(rayDir, dist_to_sphere);
+	float c = dot(dist_to_sphere, dist_to_sphere) - sphereRad * sphereRad;
+	float b_squared_minus_c = b * b - c;
+	// check for "imaginary" answer. == ray completely misses sphere
+	if (b_squared_minus_c < 0.0f) { return false; }
+	// check for ray hitting twice (in and out of the sphere)
+	if (b_squared_minus_c > 0.0f) {
+		// get the 2 intersection distances along ray
+		float t_a = -b + sqrt(b_squared_minus_c);
+		float t_b = -b - sqrt(b_squared_minus_c);
+		*intersectDist = t_b;
+		// if behind viewer, throw one or both away
+		if (t_a < 0.0) {
+			if (t_b < 0.0) { return false; }
+		}
+		else if (t_b < 0.0) {
+			*intersectDist = t_a;
+		}
+
+		return true;
+	}
+
+	// check for ray hitting once (skimming the surface)
+	if (0.0f == b_squared_minus_c) {
+		// if behind viewer, throw away
+		float t = -b + sqrt(b_squared_minus_c);
+		if (t < 0.0f) { return false; }
+		*intersectDist = t;
+		return true;
+	}
+	// note: could also check if ray origin is inside sphere radius
+	return false;
+}
+
 void glArea::mousePressEvent(QMouseEvent * event)
 {
+	GLUTmouse[0] = event->pos().x();
+	GLUTmouse[1] = event->pos().y();
 	if (event->buttons() == Qt::LeftButton) {
+		if (editOn) {
+			auto ray_wor = getRayFromMouse(GLUTmouse[0], GLUTmouse[1]);
+
+			int closestSphere = -1;
+			float closestInt = 0.0f;
+
+			for (int i = 0; i < vertexList.size(); i++) {
+				float tmpDist = 0.0f;
+				// get campos by combining rotation and translation
+				if (raySphereIntersect(camPos, ray_wor, spherePos[i], SPHERE_RAD, &tmpDist)) {
+					if (-1 == closestSphere || tmpDist < closestInt) {
+						closestSphere = i;
+						closestInt = tmpDist;
+					}
+				}
+			}
+
+			clicked.push_back(closestSphere);
+		}
 		isRotate = true;
 		isTranslate = false;
 	}
@@ -828,8 +900,6 @@ void glArea::mousePressEvent(QMouseEvent * event)
 		isTranslate = true;
 		isRotate = false;
 	}
-	GLUTmouse[0] = event->pos().x();
-	GLUTmouse[1] = event->pos().y();
 }
 
 void glArea::mouseMoveEvent(QMouseEvent * event)

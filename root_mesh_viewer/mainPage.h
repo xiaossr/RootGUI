@@ -42,6 +42,8 @@ public slots:
 	void nodalRootAboveCheckBox(int _s);
 	void showPlaneCheckBox(int _s);
 	void skeletonColorComboBox(int _s);
+
+	void rayCast(int _s);
 private:
     Ui::mainPageClass *ui;
 	glArea *area;

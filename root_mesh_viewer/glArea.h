@@ -7,6 +7,10 @@
 #include <GL/glut.h>
 #include <iostream>
 #include <set>
+
+#define VERTEX_SHADER_FILE "test_vs.glsl"
+#define FRAGMENT_SHADER_FILE "test_fs.glsl"
+
 using namespace std;
 
 typedef struct {
@@ -79,6 +83,8 @@ public:
 	std::set<int> junctions;
 	vector<int> IDs;
 
+	vector<int> clicked;
+
 	vector<double long> radius;
 	vector<int> level;
 	void adjustView();
@@ -100,6 +106,8 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);    
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent * event);
+
+	vec3 getRayFromMouse(float mousex, float mousey);
 	
 	void draw_lines();
 	void draw_whorlsAbove();

@@ -60,6 +60,9 @@ public:
     QComboBox *skeletonColor;
     QLabel *label_7;
     QLabel *label_8;
+    QCheckBox *nodalRootBelow_2;
+    QCheckBox *nodalRootBelow_3;
+    QCheckBox *rayCast;
     QWidget *meshTab;
     QCheckBox *showMesh;
     QSlider *alphaSlider;
@@ -210,6 +213,18 @@ public:
         label_8 = new QLabel(skeletonTab);
         label_8->setObjectName(QStringLiteral("label_8"));
         label_8->setGeometry(QRect(20, 220, 111, 31));
+        nodalRootBelow_2 = new QCheckBox(skeletonTab);
+        nodalRootBelow_2->setObjectName(QStringLiteral("nodalRootBelow_2"));
+        nodalRootBelow_2->setGeometry(QRect(20, 20, 151, 31));
+        nodalRootBelow_2->setChecked(false);
+        nodalRootBelow_3 = new QCheckBox(skeletonTab);
+        nodalRootBelow_3->setObjectName(QStringLiteral("nodalRootBelow_3"));
+        nodalRootBelow_3->setGeometry(QRect(30, 30, 151, 31));
+        nodalRootBelow_3->setChecked(false);
+        rayCast = new QCheckBox(skeletonTab);
+        rayCast->setObjectName(QStringLiteral("rayCast"));
+        rayCast->setGeometry(QRect(10, 560, 151, 31));
+        rayCast->setChecked(false);
         tabWidget->addTab(skeletonTab, QString());
         meshTab = new QWidget();
         meshTab->setObjectName(QStringLiteral("meshTab"));
@@ -342,6 +357,9 @@ public:
 
         label_7->setText(QApplication::translate("mainPageClass", "Skeleton Color", nullptr));
         label_8->setText(QApplication::translate("mainPageClass", "Skeleton Color Range", nullptr));
+        nodalRootBelow_2->setText(QApplication::translate("mainPageClass", "Show Nodal Roots Below", nullptr));
+        nodalRootBelow_3->setText(QApplication::translate("mainPageClass", "Show Nodal Roots Below", nullptr));
+        rayCast->setText(QApplication::translate("mainPageClass", "Ray Cast", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(skeletonTab), QApplication::translate("mainPageClass", "Skeleton", nullptr));
         showMesh->setText(QApplication::translate("mainPageClass", "Show Mesh", nullptr));
         label->setText(QApplication::translate("mainPageClass", "Transparency", nullptr));
